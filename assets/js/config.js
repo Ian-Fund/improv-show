@@ -49,8 +49,8 @@ const SITE = {
   ],
 
   // --- Contact --------------------------------------------------
-  bookingEmail: "booking@example.com", // ← yours
-  generalEmail: "hello@example.com", // ← yours
+  bookingEmail: "ianfund117@gmail.com", // ← yours
+  generalEmail: "booking@improvshowatx.com",
 
   // --- Social (leave "" to hide the link) -----------------------
   social: {
@@ -111,7 +111,7 @@ const SITE = {
    works with just the honeypot. To turn it on: make a free Cloudflare
    Turnstile widget, put the SITE key here, and set TURNSTILE_SECRET in
    Vercel's environment variables. Both halves are needed. */
-const TURNSTILE_SITE_KEY = "";
+const TURNSTILE_SITE_KEY = "0x4AAAAAAEsCTGE6M3__jmSN";
 
 const SUPABASE = {
   url: "https://svcsnxmnsxmaybohdlmp.supabase.co", // e.g. "https://abcdefgh.supabase.co"
