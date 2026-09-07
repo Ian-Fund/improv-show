@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Troupe</title>
+<meta name="description" content="Meet the improvisers behind PF, a longform improv troupe in Austin, Texas.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Troupe — PF">
+<meta property="og:description" content="The improvisers behind PF, Austin's longform improv troupe.">
+<link rel="preload" href="assets/fonts/geraldton-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0c0a10">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header" id="site-header"></header>
+
+<main>
+  <section class="hero" style="padding-bottom:20px">
+    <div class="wrap">
+      <p class="eyebrow">Who we are</p>
+      <h1>The Troupe</h1>
+      <p class="tagline" id="blurb"></p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="cast-grid" id="castGrid"></div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="bioModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="bioName">
+    <button class="modal-close" id="bioClose" aria-label="Close">&times;</button>
+    <h3 id="bioName" style="font-size:1.5rem;margin-bottom:2px"></h3>
+    <p class="muted small" id="bioRole" style="margin-bottom:14px"></p>
+    <p id="bioText" style="margin:0"></p>
+  </div>
+</div>
+
+<footer class="site-footer" id="site-footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/demo.js"></script>
+<script src="assets/js/lib.js"></script>
+<script src="assets/js/troupe.js"></script>
+</body>
+</html>

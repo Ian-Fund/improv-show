@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Troupe login</title>
+<meta name="robots" content="noindex">
+<link rel="preload" href="assets/fonts/geraldton-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0c0a10">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header" id="site-header"></header>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+
+      <!-- ---------- loading ---------- -->
+      <div id="loadingView">
+        <div class="skeleton" style="height:120px"></div>
+      </div>
+
+      <!-- ---------- not configured ---------- -->
+      <div id="setupView" hidden>
+        <p class="eyebrow">Setup needed</p>
+        <h1 style="margin-bottom:16px">Connect Supabase first</h1>
+        <div class="card">
+          <p>The login and the show database run on Supabase, and it is not configured yet.</p>
+          <p class="muted small" style="margin:0">
+            Add your project URL and anon key to <code>assets/js/config.js</code>,
+            then run the SQL in <code>supabase/schema.sql</code>. Step-by-step
+            instructions are in <code>README.md</code>.
+          </p>
+        </div>
+      </div>
+
+      <!-- ---------- sign in ---------- -->
+      <div id="signinView" hidden>
+        <p class="eyebrow">Troupe only</p>
+        <h1 style="margin-bottom:16px">Sign in</h1>
+        <div class="card" style="max-width:460px">
+          <div class="notice notice-ok" id="linkSent" hidden></div>
+          <div class="notice notice-bad" id="signinErr" hidden></div>
+          <form id="signinForm">
+            <div class="field">
+              <label for="loginEmail">Your email</label>
+              <input type="email" id="loginEmail" required autocomplete="email"
+                     placeholder="you@example.com">
+              <p class="hint">We email you a one-time link — no password to remember.</p>
+            </div>
+            <button class="btn btn-primary" type="submit" id="signinBtn">Email me a link</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ---------- not on the list ---------- -->
+      <div id="deniedView" hidden>
+        <p class="eyebrow">Signed in</p>
+        <h1 style="margin-bottom:16px">Not on the troupe list</h1>
+        <div class="card" style="max-width:520px">
+          <p id="deniedWho" class="muted"></p>
+          <p class="small muted">Ask whoever set the site up to add your email to the
+            <code>troupe_members</code> table in Supabase.</p>
+          <button class="btn btn-ghost" id="deniedSignOut">Sign out</button>
+        </div>
+      </div>
+
+      <!-- ---------- the actual admin ---------- -->
+      <div id="adminView" hidden>
+        <div class="admin-bar">
+          <div>
+            <p class="eyebrow" style="margin-bottom:2px">Show manager</p>
+            <h1 style="font-size:2.1rem">Dates</h1>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span class="muted small" id="whoami"></span>
+            <button class="btn btn-primary btn-sm" id="newShowBtn">+ Add a date</button>
+            <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign out</button>
+          </div>
+        </div>
+
+        <div class="notice notice-ok" id="adminOk" hidden></div>
+        <div class="notice notice-bad" id="adminErr" hidden></div>
+        <div class="notice notice-info" id="adminInfo" hidden></div>
+
+        <div id="adminList"></div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ---------- add / edit modal ---------- -->
+<div class="modal" id="showModal" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <h3 id="modalTitle" style="font-size:1.5rem;margin-bottom:18px">Add a date</h3>
+
+    <div class="notice notice-bad" id="formErr" hidden></div>
+
+    <form id="showForm">
+      <input type="hidden" id="f_id">
+
+      <div class="field">
+        <label for="f_title">Show title *</label>
+        <input type="text" id="f_title" required placeholder="Friday Night Longform">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="f_date">Date *</label>
+          <input type="date" id="f_date" required>
+        </div>
+        <div class="field">
+          <label for="f_start">Start time *</label>
+          <input type="time" id="f_start" required>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="f_end">End time</label>
+          <input type="time" id="f_end">
+          <p class="hint" id="endHint"></p>
+        </div>
+        <div class="field">
+          <label for="f_price">Price</label>
+          <input type="text" id="f_price" placeholder="$12 / Free">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f_venuePick">Where</label>
+        <select id="f_venuePick"></select>
+        <p class="hint">Picking a regular venue fills in the address and parking below. Everything stays editable.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="f_venue">Venue</label>
+          <input type="text" id="f_venue">
+        </div>
+        <div class="field">
+          <label for="f_city">City</label>
+          <input type="text" id="f_city">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f_address">Street address</label>
+        <input type="text" id="f_address">
+      </div>
+
+      <div class="field">
+        <label for="f_parking">Parking</label>
+        <textarea id="f_parking" style="min-height:80px"
+          placeholder="Where to park, what it costs, anything that catches people out."></textarea>
+        <p class="hint">Shown on the show card and included in the calendar event.</p>
+      </div>
+
+      <div class="field">
+        <label for="f_ticket">Ticket link</label>
+        <input type="url" id="f_ticket" placeholder="https://">
+      </div>
+
+      <div class="field">
+        <label for="f_desc">Description</label>
+        <textarea id="f_desc" placeholder="One or two lines about this particular show."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="f_lineup">Lineup</label>
+        <input type="text" id="f_lineup" placeholder="Who is on this one">
+      </div>
+
+      <div class="field checkline">
+        <input type="checkbox" id="f_published" checked>
+        <label for="f_published">Show this on the public calendar</label>
+      </div>
+
+      <div class="field checkline" id="notifyRow">
+        <input type="checkbox" id="f_notify" checked>
+        <label for="f_notify">Email the troupe a calendar link</label>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-primary" type="submit" id="saveBtn">Save date</button>
+        <button class="btn btn-ghost" type="button" id="cancelBtn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="site-footer" id="site-footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/demo.js"></script>
+<script src="assets/js/lib.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

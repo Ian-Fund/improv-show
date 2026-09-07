@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Us</title>
+<meta name="description" content="Book PF for corporate events, private parties, festivals and workshops in Austin and beyond.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Book PF — Improv in Austin">
+<meta property="og:description" content="Corporate events, private parties, festivals and workshops. We travel.">
+<link rel="preload" href="assets/fonts/geraldton-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0c0a10">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header" id="site-header"></header>
+
+<main>
+  <section class="hero" style="padding-bottom:16px">
+    <div class="wrap">
+      <p class="eyebrow">Hire the troupe</p>
+      <h1>Book Us</h1>
+      <p class="tagline">Tell us what you have in mind and we will come back to you within a couple of days.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:16px">
+    <div class="wrap">
+      <div class="grid-3" id="bookingTypes" style="margin-bottom:32px"></div>
+
+      <div class="card">
+        <h2 style="font-size:1.5rem;margin-bottom:18px">Send an inquiry</h2>
+
+        <div class="notice notice-ok" id="okMsg" hidden></div>
+        <div class="notice notice-bad" id="errMsg" hidden></div>
+
+        <form id="bookForm" novalidate>
+          <div class="grid-2">
+            <div class="field">
+              <label for="name">Your name *</label>
+              <input type="text" id="name" name="name" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="org">Company or event</label>
+              <input type="text" id="org" name="org" autocomplete="organization">
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="kind">Type of event</label>
+              <select id="kind" name="kind"></select>
+            </div>
+            <div class="field">
+              <label for="event_date">Date you have in mind</label>
+              <input type="date" id="event_date" name="event_date">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="message">Details *</label>
+            <textarea id="message" name="message" required
+              placeholder="Where is it, roughly how many people, how long a set, and anything we should know."></textarea>
+          </div>
+
+          <!-- honeypot: humans never see or fill this -->
+          <div style="position:absolute;left:-9999px" aria-hidden="true">
+            <label for="website">Leave this empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div id="turnstileSlot" style="margin-bottom:16px"></div>
+
+          <button class="btn btn-primary" type="submit" id="submitBtn">Send inquiry</button>
+          <p class="hint" style="margin-top:12px">
+            Prefer email? <a id="mailtoLink" href="#">Write to us directly.</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/demo.js"></script>
+<script src="assets/js/lib.js"></script>
+<script src="assets/js/book.js"></script>
+</body>
+</html>
