@@ -108,7 +108,98 @@ function gcalLink(show) {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+/* ---------- .ics file (Apple Calendar, Outlook, and the rest) ----------
+   Apple has no link format like Google. Every other calendar app reads a
+   standard .ics file, so the page builds one and hands it to the browser.
+   The same file works for Outlook and Thunderbird. */
+
+function icsEscape(v) {
+  return String(v == null ? "" : v)
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r?\n/g, "\\n");
+}
+
+// RFC 5545 limits a line to 75 octets. Longer lines fold onto a new line
+// that starts with one space. Some calendar apps reject unfolded lines.
+// The limit here is 60 characters, which leaves room for characters that
+// take more than one byte, such as the em dash.
+function icsFold(line) {
+  const parts = [];
+  let rest = line;
+  while (rest.length > 60) {
+    parts.push(rest.slice(0, 60));
+    rest = rest.slice(60);
+  }
+  parts.push(rest);
+  return parts.join("\r\n ");
+}
+
+function icsText(show) {
+  const start = new Date(show.starts_at);
+  const end = show.ends_at
+    ? new Date(show.ends_at)
+    : new Date(start.getTime() + defaultRunMs());
+
+  const where = [show.venue, show.address, show.city].filter(Boolean).join(", ");
+  const parking = parkingFor(show);
+  const tickets = safeUrl(show.ticket_url);
+  const description = [
+    show.description,
+    show.lineup ? `Lineup: ${show.lineup}` : "",
+    parking ? `Parking: ${parking}` : "",
+    show.price ? `Tickets: ${show.price}` : "",
+    tickets,
+  ].filter(Boolean).join("\n\n");
+
+  const host = window.location.hostname || "improvshowatx.com";
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    `PRODID:-//${icsEscape(SITE.troupeName)}//Shows//EN`,
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${icsEscape(show.id || gcalStamp(start))}@${host}`,
+    `DTSTAMP:${gcalStamp(new Date())}`,
+    `DTSTART:${gcalStamp(start)}`,
+    `DTEND:${gcalStamp(end)}`,
+    `SUMMARY:${icsEscape(show.title + " \u2014 " + SITE.troupeName)}`,
+  ];
+  if (where) lines.push(`LOCATION:${icsEscape(where)}`);
+  if (description) lines.push(`DESCRIPTION:${icsEscape(description)}`);
+  if (tickets) lines.push(`URL:${icsEscape(tickets)}`);
+  lines.push("END:VEVENT", "END:VCALENDAR");
+
+  return lines.map(icsFold).join("\r\n") + "\r\n";
+}
+
+function icsFileName(show) {
+  const slug = String(show.title || "show")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+  return (slug || "show") + ".ics";
+}
+
+// Gives the file to the browser. A desktop opens it in the calendar app.
+// Safari on iOS saves it to Files first. The visitor then taps the file.
+function downloadIcs(show) {
+  const blob = new Blob([icsText(show)], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = icsFileName(show);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+}
+
 /* ---------- fetching shows ---------- */
+
 async function fetchShows() {
   const client = db();
   let rows;

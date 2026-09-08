@@ -22,6 +22,8 @@ const ICONS = {
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   pin:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+  calendar:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
   car:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 17h14M4 17v-4l2-5h12l2 5v4"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>',
   ticket:
@@ -57,10 +59,31 @@ function actions(show, isPast) {
       `<a class="btn btn-primary btn-sm" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Tickets</a>`
     );
   }
-  out.push(
-    `<a class="btn btn-ghost btn-sm" href="${esc(gcalLink(show))}" target="_blank" rel="noopener noreferrer">Add to Calendar</a>`
-  );
+  out.push(calendarMenu(show, true));
   return out.join("");
+}
+
+// The cards are built as HTML strings, so the click handlers below need a
+// way back to the show object. This map is that way back.
+const SHOWS_BY_ID = new Map();
+
+function calendarMenu(show, small) {
+  const size = small ? " btn-sm" : "";
+  return `
+    <div class="cal-menu">
+      <button type="button" class="btn btn-ghost${size} cal-toggle"
+              data-show="${esc(show.id)}" aria-expanded="false" aria-haspopup="true">
+        ${ICONS.calendar}Add to calendar
+      </button>
+      <div class="cal-items" hidden role="menu">
+        <a role="menuitem" href="${esc(gcalLink(show))}" target="_blank" rel="noopener noreferrer">
+          Google Calendar
+        </a>
+        <button type="button" role="menuitem" class="cal-ics" data-show="${esc(show.id)}">
+          Apple Calendar <span class="cal-hint">.ics file</span>
+        </button>
+      </div>
+    </div>`;
 }
 
 function parkingBlock(show) {
@@ -108,7 +131,7 @@ function nextShowBlock(show) {
           ${tickets
             ? `<a class="btn btn-primary" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Get tickets</a>`
             : ""}
-          <a class="btn btn-ghost" href="${esc(gcalLink(show))}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+          ${calendarMenu(show, false)}
         </div>
       </div>
     </div>`;
@@ -120,6 +143,7 @@ function nextShowBlock(show) {
 
   try {
     const { upcoming, past } = await fetchShows();
+    upcoming.concat(past).forEach((s) => SHOWS_BY_ID.set(String(s.id), s));
 
     if (upcoming.length) {
       nextEl.innerHTML = nextShowBlock(upcoming[0]);
@@ -158,3 +182,44 @@ function nextShowBlock(show) {
     nextEl.innerHTML = "";
   }
 })();
+
+
+/* ============================================================
+   The add-to-calendar menu
+   ============================================================ */
+
+function closeAllMenus(except) {
+  document.querySelectorAll(".cal-menu").forEach(function (menu) {
+    if (menu === except) return;
+    menu.querySelector(".cal-items").hidden = true;
+    menu.querySelector(".cal-toggle").setAttribute("aria-expanded", "false");
+  });
+}
+
+document.addEventListener("click", function (e) {
+  const toggle = e.target.closest(".cal-toggle");
+  if (toggle) {
+    const menu = toggle.closest(".cal-menu");
+    const items = menu.querySelector(".cal-items");
+    const open = items.hidden;
+    closeAllMenus(menu);
+    items.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    return;
+  }
+
+  const ics = e.target.closest(".cal-ics");
+  if (ics) {
+    const show = SHOWS_BY_ID.get(String(ics.dataset.show));
+    if (show) downloadIcs(show);
+    closeAllMenus();
+    return;
+  }
+
+  // A click anywhere else closes an open menu.
+  closeAllMenus();
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") closeAllMenus();
+});
