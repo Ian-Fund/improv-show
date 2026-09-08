@@ -17,6 +17,10 @@ const SITE = {
   // How long a show runs when you leave the end time blank.
   defaultShowMinutes: 60,
 
+  // How many shows each list adds when the visitor presses "Show more".
+  // Set to 2 for testing. Change it to 5 before launch.
+  showsPerPage: 5,
+
   // --- Venues ---------------------------------------------------
   // The rooms you play regularly. Picking one in the show form fills in
   // the address and the parking note, so you type it once and never again.

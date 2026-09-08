@@ -443,6 +443,10 @@ details.parking > p {
 .next-parking svg { width: 15px; height: 15px; flex: none; margin-top: 3px; color: var(--brand); }
 .next-parking b { color: var(--paper); font-weight: 700; }
 
+.more-row { display: flex; justify-content: center; margin-top: 16px; }
+.more-row:empty { display: none; }
+.more-left { color: var(--paper-mute); font-weight: 600; }
+
 .empty {
   border: 1px dashed var(--line);
   border-radius: var(--radius);

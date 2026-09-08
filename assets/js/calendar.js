@@ -137,6 +137,50 @@ function nextShowBlock(show) {
     </div>`;
 }
 
+/* ============================================================
+   Progressive lists
+   ------------------------------------------------------------
+   A "Show more" button reveals the next batch instead of moving
+   to a new page. The visitor keeps their place, nothing reloads,
+   and every date stays on one page for search engines to read.
+   The batch size is SITE.showsPerPage in config.js.
+   ============================================================ */
+
+const PAGE_SIZE = Math.max(1, SITE.showsPerPage || 5);
+
+function renderPaged(listEl, moreEl, shows, isPast, state) {
+  listEl.innerHTML = shows
+    .slice(0, state.shown)
+    .map(function (s) { return showRow(s, isPast); })
+    .join("");
+
+  const left = shows.length - state.shown;
+
+  // Nothing hidden and nothing extra shown: no button needed.
+  if (left <= 0 && state.shown <= PAGE_SIZE) {
+    moreEl.innerHTML = "";
+    return;
+  }
+
+  moreEl.innerHTML =
+    left > 0
+      ? `<button type="button" class="btn btn-ghost btn-sm">
+           Show ${Math.min(PAGE_SIZE, left)} more
+           <span class="more-left">${left} left</span>
+         </button>`
+      : `<button type="button" class="btn btn-ghost btn-sm">Show fewer</button>`;
+
+  moreEl.querySelector("button").addEventListener("click", function () {
+    const collapsing = left <= 0;
+    state.shown = collapsing ? PAGE_SIZE : state.shown + PAGE_SIZE;
+    renderPaged(listEl, moreEl, shows, isPast, state);
+    // Keep the keyboard on the button the visitor just pressed.
+    const next = moreEl.querySelector("button");
+    if (next) next.focus();
+    if (collapsing) listEl.scrollIntoView({ block: "nearest" });
+  });
+}
+
 (async function () {
   const upcomingEl = document.getElementById("upcomingList");
   const nextEl = document.getElementById("nextShow");
@@ -148,9 +192,17 @@ function nextShowBlock(show) {
     if (upcoming.length) {
       nextEl.innerHTML = nextShowBlock(upcoming[0]);
       const rest = upcoming.slice(1);
-      upcomingEl.innerHTML = rest.length
-        ? rest.map((s) => showRow(s, false)).join("")
-        : `<div class="empty">That is the only date on the books right now. More soon.</div>`;
+      if (rest.length) {
+        renderPaged(
+          upcomingEl,
+          document.getElementById("upcomingMore"),
+          rest,
+          false,
+          { shown: PAGE_SIZE }
+        );
+      } else {
+        upcomingEl.innerHTML = `<div class="empty">That is the only date on the books right now. More soon.</div>`;
+      }
       document.getElementById("upcomingCount").textContent =
         `${upcoming.length} date${upcoming.length === 1 ? "" : "s"} scheduled`;
     } else {
@@ -172,8 +224,13 @@ function nextShowBlock(show) {
       document.getElementById("archive").hidden = false;
       document.getElementById("archiveSummary").textContent =
         `Past shows (${past.length})`;
-      document.getElementById("pastList").innerHTML =
-        past.slice(0, 24).map((s) => showRow(s, true)).join("");
+      renderPaged(
+        document.getElementById("pastList"),
+        document.getElementById("pastMore"),
+        past,
+        true,
+        { shown: PAGE_SIZE }
+      );
     }
   } catch (err) {
     console.error(err);
