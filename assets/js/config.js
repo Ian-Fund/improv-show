@@ -49,7 +49,7 @@ const SITE = {
   ],
 
   // --- Contact --------------------------------------------------
-  bookingEmail: "ianfund117@gmail.com", // ← yours
+  bookingEmail: "booking@improvshowatx.com",
   generalEmail: "booking@improvshowatx.com",
 
   // --- Social (leave "" to hide the link) -----------------------
