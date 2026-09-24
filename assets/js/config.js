@@ -58,7 +58,7 @@ const SITE = {
 
   // --- Social (leave "" to hide the link) -----------------------
   social: {
-    instagram: "https://instagram.com/yourhandle", // ← yours
+    instagram: "https://www.instagram.com/improvshowatx/",
     tiktok: "",
     youtube: "",
     facebook: "",
@@ -71,14 +71,14 @@ const SITE = {
     {
       name: "Ian Fund",
       role: "",
-      photo: "",
-      bio: "Two sentences about them. Where they trained, what they are known for onstage, one funny detail.",
+      photo: "ian-fund.webp",
+      bio: "Ian started improvising in 2023. He's found a duo show to be the most intriguing because of the intimacy, space, and creativity it requires.",
     },
     {
       name: "Chandler Palmer",
       role: "",
-      photo: "",
-      bio: "Two sentences about them.",
+      photo: "chandler-palmer.webp",
+      bio: "Chandler is too cool to have sent in a bio yet. But just you wait... it's coming.",
     },
   ],
 

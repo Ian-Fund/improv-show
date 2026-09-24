@@ -15,13 +15,28 @@ function initials(name) {
     .join("");
 }
 
+// A .webp photo gets a .jpg fallback with the same base name, for the rare
+// browser that cannot show .webp. Any other format is used as it is.
+function photoTag(p) {
+  const file = String(p.photo);
+  const alt = esc(p.name);
+  if (/\.webp$/i.test(file)) {
+    const jpg = file.replace(/\.webp$/i, ".jpg");
+    return `<picture>
+        <source srcset="assets/img/${esc(file)}" type="image/webp">
+        <img src="assets/img/${esc(jpg)}" alt="${alt}" loading="lazy" width="600" height="600">
+      </picture>`;
+  }
+  return `<img src="assets/img/${esc(file)}" alt="${alt}" loading="lazy">`;
+}
+
 document.getElementById("castGrid").innerHTML = SITE.cast
   .map(
     (p, i) => `
     <button class="cast-card" data-i="${i}">
       <div class="cast-photo">${
         p.photo
-          ? `<img src="assets/img/${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">`
+          ? photoTag(p)
           : esc(initials(p.name))
       }</div>
       <div class="cast-name">${esc(p.name)}</div>
