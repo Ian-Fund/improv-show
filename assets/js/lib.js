@@ -3,7 +3,13 @@
 /* ---------- escaping ---------- */
 function esc(v) {
   return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[c];
   });
 }
 
@@ -48,10 +54,33 @@ function db() {
 function defaultRunMs() {
   return (SITE.defaultShowMinutes || 60) * 60 * 1000;
 }
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
-function d(show) { return new Date(show.starts_at); }
+function d(show) {
+  return new Date(show.starts_at);
+}
 
 function timeStr(date) {
   let h = date.getHours();
@@ -78,7 +107,10 @@ function timeLine(show) {
 
 /* ---------- Google Calendar link ---------- */
 function gcalStamp(date) {
-  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return date
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 }
 
 function gcalLink(show) {
@@ -87,7 +119,9 @@ function gcalLink(show) {
     ? new Date(show.ends_at)
     : new Date(start.getTime() + defaultRunMs());
 
-  const where = [show.venue, show.address, show.city].filter(Boolean).join(", ");
+  const where = [show.venue, show.address, show.city]
+    .filter(Boolean)
+    .join(", ");
   const parking = parkingFor(show);
   const details = [
     show.description,
@@ -95,7 +129,9 @@ function gcalLink(show) {
     parking ? `Parking: ${parking}` : "",
     show.price ? `Tickets: ${show.price}` : "",
     show.ticket_url,
-  ].filter(Boolean).join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -142,7 +178,9 @@ function icsText(show) {
     ? new Date(show.ends_at)
     : new Date(start.getTime() + defaultRunMs());
 
-  const where = [show.venue, show.address, show.city].filter(Boolean).join(", ");
+  const where = [show.venue, show.address, show.city]
+    .filter(Boolean)
+    .join(", ");
   const parking = parkingFor(show);
   const tickets = safeUrl(show.ticket_url);
   const description = [
@@ -151,7 +189,9 @@ function icsText(show) {
     parking ? `Parking: ${parking}` : "",
     show.price ? `Tickets: ${show.price}` : "",
     tickets,
-  ].filter(Boolean).join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   const host = window.location.hostname || "improvshowatx.com";
   const lines = [
@@ -187,7 +227,9 @@ function icsFileName(show) {
 // Gives the file to the browser. A desktop opens it in the calendar app.
 // Safari on iOS saves it to Files first. The visitor then taps the file.
 function downloadIcs(show) {
-  const blob = new Blob([icsText(show)], { type: "text/calendar;charset=utf-8" });
+  const blob = new Blob([icsText(show)], {
+    type: "text/calendar;charset=utf-8",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -195,7 +237,9 @@ function downloadIcs(show) {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  setTimeout(function () {
+    URL.revokeObjectURL(url);
+  }, 2000);
 }
 
 /* ---------- fetching shows ---------- */
@@ -212,7 +256,7 @@ async function fetchShows() {
     const { data, error } = await client
       .from("shows")
       .select(
-        "id,title,starts_at,ends_at,venue,address,city,price,ticket_url,description,lineup,parking"
+        "id,title,starts_at,ends_at,venue,address,city,price,ticket_url,description,lineup,parking",
       )
       .eq("is_published", true)
       .order("starts_at", { ascending: true });
@@ -224,7 +268,9 @@ async function fetchShows() {
   // while it is happening.
   const now = Date.now();
   const endOf = (s) =>
-    new Date(s.ends_at || new Date(s.starts_at).getTime() + defaultRunMs()).getTime();
+    new Date(
+      s.ends_at || new Date(s.starts_at).getTime() + defaultRunMs(),
+    ).getTime();
 
   const upcoming = rows
     .filter((s) => endOf(s) >= now)
@@ -238,9 +284,14 @@ async function fetchShows() {
 
 /* ---------- venues ---------- */
 function venueByName(name) {
-  const wanted = String(name || "").trim().toLowerCase();
+  const wanted = String(name || "")
+    .trim()
+    .toLowerCase();
   if (!wanted) return null;
-  return (SITE.venues || []).find((v) => v.name.trim().toLowerCase() === wanted) || null;
+  return (
+    (SITE.venues || []).find((v) => v.name.trim().toLowerCase() === wanted) ||
+    null
+  );
 }
 
 // Prefer what was saved with the show — a venue's parking situation can
@@ -255,7 +306,7 @@ function parkingFor(show) {
 /* ---------- chrome ---------- */
 function fullTitle() {
   return SITE.showName && SITE.showName !== SITE.troupeName
-    ? `${SITE.troupeName} — ${SITE.showName}`
+    ? `${SITE.troupeName} - ${SITE.showName}`
     : SITE.troupeName;
 }
 
@@ -263,7 +314,13 @@ function fullTitle() {
 function monogramText() {
   const n = SITE.troupeName.trim();
   if (n.replace(/\s/g, "").length <= 3) return n.toUpperCase();
-  return n.split(/\s+/).filter(Boolean).slice(0, 3).map((w) => w[0]).join("").toUpperCase();
+  return n
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
 }
 
 function renderHeader(active) {
@@ -275,7 +332,7 @@ function renderHeader(active) {
   const nav = links
     .map(
       ([href, label]) =>
-        `<a href="${href}"${active === href ? ' aria-current="page"' : ""}>${label}</a>`
+        `<a href="${href}"${active === href ? ' aria-current="page"' : ""}>${label}</a>`,
     )
     .join("");
 
@@ -296,13 +353,14 @@ function renderHeader(active) {
   const navEl = document.getElementById("navLinks");
   const mobile = () => window.matchMedia("(max-width: 760px)").matches;
   const sync = () => {
-    if (mobile()) navEl.hidden = toggle.getAttribute("aria-expanded") !== "true";
+    if (mobile())
+      navEl.hidden = toggle.getAttribute("aria-expanded") !== "true";
     else navEl.hidden = false;
   };
   toggle.addEventListener("click", () => {
     toggle.setAttribute(
       "aria-expanded",
-      toggle.getAttribute("aria-expanded") === "true" ? "false" : "true"
+      toggle.getAttribute("aria-expanded") === "true" ? "false" : "true",
     );
     sync();
   });
@@ -316,7 +374,7 @@ function renderFooter() {
     .filter(([, url]) => url)
     .map(
       ([name, url]) =>
-        `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${name[0].toUpperCase() + name.slice(1)}</a>`
+        `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${name[0].toUpperCase() + name.slice(1)}</a>`,
     )
     .join("");
 
