@@ -171,6 +171,32 @@ code {
   text-transform: uppercase;
   color: var(--paper-mute);
 }
+
+/* Home link hover: the PF tile tilts, brightens and glows, like a sign
+   catching the light. A keyboard focus gets the same effect. */
+.wordmark .monogram {
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.wordmark .locale { transition: color .18s ease; }
+.wordmark:hover .monogram,
+.wordmark:focus-visible .monogram {
+  transform: rotate(-6deg) scale(1.06);
+  background: var(--brand-lift);
+  box-shadow: 0 0 30px rgba(255,218,71,.55);
+}
+.wordmark:active .monogram { transform: rotate(-6deg) scale(.97); }
+.wordmark:hover .locale,
+.wordmark:focus-visible .locale { color: var(--paper); }
+.wordmark:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 6px;
+  border-radius: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wordmark:hover .monogram,
+  .wordmark:focus-visible .monogram,
+  .wordmark:active .monogram { transform: none; }
+}
 .nav { display: flex; align-items: center; gap: 6px; }
 .nav a {
   color: var(--paper-dim);
