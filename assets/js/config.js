@@ -45,7 +45,7 @@ const SITE = {
         "Street parking is free in the evenings. Paid garage on the same block.",
     },
     {
-      name: "Factory on 5th",
+      name: "Haven on 5th",
       address: "3409 E 5th St",
       city: "Austin, TX",
       parking: "Free street parking on the surrounding blocks.",
@@ -185,7 +185,7 @@ const SAMPLE_SHOWS = [
     title: "Season Opener",
     starts_at: onWeekday(5, -2, 20, 0),
     ends_at: onWeekday(5, -2, 21, 30),
-    venue: "Factory on 5th",
+    venue: "Haven on 5th",
     address: "3409 E 5th St",
     city: "Austin, TX",
     parking: "Free street parking on the surrounding blocks.",
