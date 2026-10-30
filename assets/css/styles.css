@@ -181,8 +181,7 @@ code {
 .wordmark:hover .monogram,
 .wordmark:focus-visible .monogram {
   transform: rotate(-6deg) scale(1.06);
-  background: var(--brand-lift);
-  box-shadow: 0 0 30px rgba(255,218,71,.55);
+  box-shadow: 0 0 24px rgba(255,218,71,.38);
 }
 .wordmark:active .monogram { transform: rotate(-6deg) scale(.97); }
 .wordmark:hover .locale,
