@@ -1,0 +1,67 @@
+/* yellow-outline.css — the second brand yellow test.
+   Loaded only by test2.html. The page keeps the original dark design.
+   Yellow appears as edges, outlines and small marks that point the eye
+   at each component, with no large yellow fills.
+   To use it on the real home page, add this file's <link> to index.html
+   and add the class card-brand to the booking box. To drop the idea,
+   delete this file and test2.html. */
+
+/* a thick yellow bar under each section heading */
+.section-head h2 { position: relative; padding-bottom: 16px; }
+.section-head h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 72px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--brand);
+}
+
+/* the featured show: a yellow frame and a soft yellow glow */
+.next-show {
+  border: 2px solid var(--brand);
+  box-shadow: 0 0 0 6px rgba(255,218,71,.07), 0 18px 48px rgba(0,0,0,.45);
+}
+.next-show .next-parking { border-left: 3px solid var(--brand); }
+
+/* every upcoming show card: the same yellow frame as the featured show.
+   The halo grows a little when the mouse is over the card. */
+.show:not(.past) {
+  border: 2px solid var(--brand);
+  box-shadow: 0 0 0 6px rgba(255,218,71,.07);
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.show:not(.past):hover {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 6px rgba(255,218,71,.14);
+}
+/* an opened parking note gets the same yellow edge as the featured one */
+.show:not(.past) details.parking > p {
+  border-left: 3px solid var(--brand);
+  padding-left: 10px;
+}
+/* past shows keep their grey edge */
+.show.past { border-color: var(--line); }
+
+/* every date chip gets a yellow frame, like the featured one */
+.datechip { border-color: rgba(255,218,71,.55); }
+.next-show .datechip { border-color: var(--brand); }
+
+/* outline buttons in yellow */
+.btn-ghost { color: var(--brand); border-color: rgba(255,218,71,.5); }
+.btn-ghost:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: rgba(255,218,71,.08);
+}
+
+/* the booking box: a yellow frame, dark inside */
+.card-brand {
+  border: 2px solid var(--brand);
+  box-shadow: 0 0 0 6px rgba(255,218,71,.07);
+}
+
+/* a yellow rule above the footer */
+.site-footer { border-top: 2px solid rgba(255,218,71,.35); }
