@@ -37,12 +37,13 @@
 .ticket-strip .ts-go:hover { background: #3a2c00; }
 .ticket-strip .ts-go:focus-visible { outline: 2px solid var(--on-brand); outline-offset: 2px; }
 
-/* on a phone the label and the venue drop off so the bar stays short.
-   The dots go too: when the bar wraps, a dot at the start of a line
-   looks like a mistake. */
+/* on a phone the bar shows only "Next show", the date and the button,
+   so it fits on one line. The show name, the time and the venue drop
+   off. A dot still separates the label from the date. */
 @media (max-width: 760px) {
   .ticket-strip { font-size: .72rem; gap: 4px 10px; padding: 8px 12px; }
-  .ticket-strip .ts-label,
+  .ticket-strip .ts-title,
+  .ticket-strip .ts-time,
   .ticket-strip .ts-where { display: none; }
-  .ticket-strip .ts-when::before { content: none; }
+  .ticket-strip .ts-when::before { margin-right: 10px; }
 }

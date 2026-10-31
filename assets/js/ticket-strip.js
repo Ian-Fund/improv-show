@@ -11,7 +11,9 @@
     if (!show) return;
 
     const s = d(show);
-    const when = `${DAYS[s.getDay()].slice(0, 3)}, ${MONTHS[s.getMonth()]} ${s.getDate()} · ${timeStr(s)}`;
+    // Date and time sit in separate spans, so a phone can drop the time.
+    const date = `${DAYS[s.getDay()].slice(0, 3)}, ${MONTHS[s.getMonth()]} ${s.getDate()}`;
+    const time = timeStr(s);
     const tickets = safeUrl(show.ticket_url);
     const go = tickets
       ? `<a class="ts-go" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Get tickets &rarr;</a>`
@@ -20,7 +22,8 @@
     bar.innerHTML =
       `<span class="ts-label">Next show</span>` +
       `<span class="ts-title">${esc(show.title)}</span>` +
-      `<span class="ts-when">${esc(when)}</span>` +
+      `<span class="ts-when"><span class="ts-date">${esc(date)}</span>` +
+      `<span class="ts-time"> · ${esc(time)}</span></span>` +
       (show.venue ? `<span class="ts-where">${esc(show.venue)}</span>` : "") +
       go;
     bar.hidden = false;
