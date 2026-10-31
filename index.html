@@ -24,8 +24,11 @@
     <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0c0a10" />
     <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/yellow-outline.css" />
+    <link rel="stylesheet" href="assets/css/ticket-strip.css" />
   </head>
   <body>
+    <aside id="ticketStrip" class="ticket-strip" aria-label="Next show" hidden></aside>
     <header class="site-header" id="site-header"></header>
 
     <main>
@@ -65,7 +68,7 @@
       <section class="section">
         <div class="wrap">
           <div
-            class="card"
+            class="card card-brand"
             style="
               display: flex;
               gap: 24px;
@@ -94,5 +97,6 @@
     <script src="assets/js/demo.js"></script>
     <script src="assets/js/lib.js"></script>
     <script src="assets/js/calendar.js"></script>
+    <script src="assets/js/ticket-strip.js"></script>
   </body>
 </html>

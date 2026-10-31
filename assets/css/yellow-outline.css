@@ -1,10 +1,8 @@
-/* yellow-outline.css — the second brand yellow test.
-   Loaded only by test2.html. The page keeps the original dark design.
-   Yellow appears as edges, outlines and small marks that point the eye
-   at each component, with no large yellow fills.
-   To use it on the real home page, add this file's <link> to index.html
-   and add the class card-brand to the booking box. To drop the idea,
-   delete this file and test2.html. */
+/* yellow-outline.css — brand yellow on the home page.
+   The page keeps the dark design. Yellow appears as edges, outlines
+   and small marks that point the eye at each component, with no large
+   yellow fills. Loaded by index.html. The booking box needs the class
+   card-brand to get its yellow frame. */
 
 /* a thick yellow bar under each section heading */
 .section-head h2 { position: relative; padding-bottom: 16px; }

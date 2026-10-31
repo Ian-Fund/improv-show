@@ -1,4 +1,4 @@
-/* ticket-strip.js — fills the yellow bar above the header (test 4).
+/* ticket-strip.js — fills the yellow bar above the header on the home page.
    It reads the same show list as the calendar, so the bar always names
    the next show without any hand edits. If nothing is scheduled, or the
    list cannot load, the bar stays hidden and the page works as normal. */
