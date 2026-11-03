@@ -71,3 +71,91 @@ modal.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !modal.hidden) closeBio();
 });
+
+/* ------------------------------------------------------------
+   Photo gallery. The list lives in SITE.gallery in config.js.
+   Click a photo to see it large. Arrow keys move between photos.
+   ------------------------------------------------------------ */
+const GALLERY = Array.isArray(SITE.gallery) ? SITE.gallery.filter((g) => g && g.photo) : [];
+
+function galleryTag(g) {
+  const file = String(g.photo);
+  const alt = esc(g.alt || "");
+  const tall = g.shape === "tall";
+  const size = tall ? 'width="800" height="1200"' : 'width="1200" height="800"';
+  if (/\.webp$/i.test(file)) {
+    const jpg = file.replace(/\.webp$/i, ".jpg");
+    return `<picture>
+        <source srcset="assets/img/gallery/${esc(file)}" type="image/webp">
+        <img src="assets/img/gallery/${esc(jpg)}" alt="${alt}" loading="lazy" ${size}>
+      </picture>`;
+  }
+  return `<img src="assets/img/gallery/${esc(file)}" alt="${alt}" loading="lazy" ${size}>`;
+}
+
+// On a phone, tall photos sit two to a row. If the count is odd, the last
+// tall photo gets the full row (class "solo") so no gap is left.
+const TALL = GALLERY.filter((g) => g.shape === "tall");
+const SOLO = TALL.length % 2 ? TALL[TALL.length - 1] : null;
+
+if (GALLERY.length) {
+  document.getElementById("gallery").innerHTML = GALLERY.map(
+    (g, i) => `
+    <button class="gallery-item ${g.shape === "tall" ? "tall" : "wide"}${g === SOLO ? " solo" : ""}" data-i="${i}" aria-label="Open photo: ${esc(g.alt || "photo " + (i + 1))}">
+      ${galleryTag(g)}
+    </button>`
+  ).join("");
+  document.getElementById("gallerySection").hidden = false;
+}
+
+const photoModal = document.getElementById("photoModal");
+const photoBig = document.getElementById("photoBig");
+const photoCaption = document.getElementById("photoCaption");
+const photoClose = document.getElementById("photoClose");
+const photoPrev = document.getElementById("photoPrev");
+const photoNext = document.getElementById("photoNext");
+let photoIndex = 0;
+let photoOpener = null;
+
+function showPhoto(i) {
+  photoIndex = (i + GALLERY.length) % GALLERY.length;
+  const g = GALLERY[photoIndex];
+  // Use the same file the small photo loaded (.webp or .jpg).
+  const thumb = document.querySelector(`.gallery-item[data-i="${photoIndex}"] img`);
+  const file = String(g.photo);
+  photoBig.src = (thumb && thumb.currentSrc) || "assets/img/gallery/" + file.replace(/\.webp$/i, ".jpg");
+  photoBig.alt = g.alt || "";
+  photoBig.className = g.shape === "tall" ? "tall" : "wide";
+  photoCaption.textContent = g.alt || "";
+}
+function openPhoto(i, opener) {
+  photoOpener = opener || null;
+  showPhoto(i);
+  const many = GALLERY.length > 1;
+  photoPrev.hidden = !many;
+  photoNext.hidden = !many;
+  photoModal.hidden = false;
+  photoClose.focus();
+}
+function closePhoto() {
+  photoModal.hidden = true;
+  photoBig.removeAttribute("src");
+  if (photoOpener) photoOpener.focus();
+}
+
+document.getElementById("gallery").addEventListener("click", (e) => {
+  const item = e.target.closest(".gallery-item");
+  if (item) openPhoto(Number(item.dataset.i), item);
+});
+photoClose.addEventListener("click", closePhoto);
+photoPrev.addEventListener("click", () => showPhoto(photoIndex - 1));
+photoNext.addEventListener("click", () => showPhoto(photoIndex + 1));
+photoModal.addEventListener("click", (e) => {
+  if (e.target === photoModal) closePhoto();
+});
+document.addEventListener("keydown", (e) => {
+  if (photoModal.hidden) return;
+  if (e.key === "Escape") closePhoto();
+  else if (e.key === "ArrowLeft" && GALLERY.length > 1) showPhoto(photoIndex - 1);
+  else if (e.key === "ArrowRight" && GALLERY.length > 1) showPhoto(photoIndex + 1);
+});

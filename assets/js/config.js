@@ -82,6 +82,21 @@ const SITE = {
     },
   ],
 
+  // --- Photo gallery (Troupe page) --------------------------------
+  // photo: a file in assets/img/gallery/. A .webp needs a .jpg with the
+  // same name next to it. shape: "wide" (3:2) or "tall" (2:3).
+  // alt: a short description for screen readers. It also shows under
+  // the large photo. Delete a line to remove that photo. Leave the list
+  // empty to hide the whole gallery.
+  gallery: [
+    { photo: "duo-dip.webp", shape: "wide", alt: "Chandler holds Ian in a dramatic dip." },
+    { photo: "duo-talk.webp", shape: "wide", alt: "Ian makes his case. Chandler is amused." },
+    { photo: "duo-grumpy.webp", shape: "wide", alt: "Chandler and Ian pull their grumpiest faces." },
+    { photo: "duo-look.webp", shape: "tall", alt: "Chandler and Ian trade a look." },
+    { photo: "duo-piggyback.webp", shape: "tall", alt: "Ian rides piggyback on Chandler." },
+    { photo: "duo-skeptical.webp", shape: "tall", alt: "Chandler explains. Ian is not convinced." },
+  ],
+
   // --- Booking pitch --------------------------------------------
   bookingTypes: [
     {

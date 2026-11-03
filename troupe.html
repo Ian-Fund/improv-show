@@ -31,6 +31,13 @@
       <div class="cast-grid" id="castGrid"></div>
     </div>
   </section>
+
+  <section class="section" id="gallerySection" style="padding-top:20px" hidden>
+    <div class="wrap">
+      <div class="section-head"><h2>Photos</h2></div>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
 </main>
 
 <div class="modal" id="bioModal" hidden>
@@ -39,6 +46,18 @@
     <h3 id="bioName" style="font-size:1.5rem;margin-bottom:2px"></h3>
     <p class="muted small" id="bioRole" style="margin-bottom:14px"></p>
     <p id="bioText" style="margin:0"></p>
+  </div>
+</div>
+
+<div class="modal lightbox" id="photoModal" hidden>
+  <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="Photo">
+    <button class="modal-close" id="photoClose" aria-label="Close">&times;</button>
+    <img id="photoBig" src="" alt="">
+    <div class="lightbox-bar">
+      <button class="btn btn-ghost btn-sm" id="photoPrev" aria-label="Previous photo">&larr;</button>
+      <p class="small muted" id="photoCaption"></p>
+      <button class="btn btn-ghost btn-sm" id="photoNext" aria-label="Next photo">&rarr;</button>
+    </div>
   </div>
 </div>
 
