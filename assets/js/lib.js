@@ -336,17 +336,35 @@ function renderHeader(active) {
     )
     .join("");
 
+  // The Instagram link sits in the header, outside the menu, so phone
+  // visitors see it without opening the menu. Leave
+  // SITE.social.instagram blank in config.js to hide it.
+  const ig = safeUrl(SITE.social && SITE.social.instagram);
+  const igLink = ig
+    ? `<a class="header-social" href="${esc(ig)}" target="_blank" rel="noopener noreferrer"
+         aria-label="${esc(SITE.troupeName)} on Instagram (opens in a new tab)">
+        <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>
+        </svg>
+        <span>Instagram</span>
+      </a>`
+    : "";
+
   document.getElementById("site-header").innerHTML = `
     <div class="wrap">
       <a class="wordmark" href="index.html" aria-label="${esc(SITE.troupeName)} home">
         <span class="monogram">${esc(monogramText())}</span>
         <span class="locale">${esc(SITE.showName || SITE.city)}</span>
       </a>
-      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Menu">☰</button>
-      <nav class="nav" id="navLinks">
-        ${nav}
-        <a class="btn btn-primary btn-sm" href="index.html#upcoming">Tickets</a>
-      </nav>
+      <div class="header-end">
+        ${igLink}
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Menu">☰</button>
+        <nav class="nav" id="navLinks">
+          ${nav}
+          <a class="btn btn-primary btn-sm" href="index.html#upcoming">Tickets</a>
+        </nav>
+      </div>
     </div>`;
 
   const toggle = document.getElementById("navToggle");

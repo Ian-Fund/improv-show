@@ -210,6 +210,32 @@ code {
 .nav a.btn-primary:hover { color: var(--on-brand); background: var(--brand-lift); }
 .nav a[aria-current="page"] { color: var(--paper); }
 
+/* Right side of the header: the menu, then the Instagram link.
+   On a computer the menu shows first. On a phone the menu folds
+   behind the ☰ button and the Instagram link stays in view. */
+.header-end { display: flex; align-items: center; gap: 12px; }
+.header-end .nav { order: -1; }
+.header-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--paper-dim);
+  text-decoration: none;
+  font-size: .86rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.header-social svg { flex: none; }
+.header-social:hover,
+.header-social:focus-visible {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: rgba(255,218,71,.08);
+}
+
 .nav-toggle {
   display: none;
   background: none;
@@ -795,6 +821,10 @@ textarea { min-height: 110px; resize: vertical; }
   .nav a { padding: 12px; }
   .nav .btn { margin-top: 6px; }
   .nav-toggle { display: block; }
+  .site-header .wrap { gap: 12px; }
+  .wordmark .locale { white-space: nowrap; }
+  .header-end { gap: 8px; }
+  .header-social { padding: 7px 10px; gap: 6px; font-size: .82rem; }
 
   .next-show { grid-template-columns: 1fr; gap: 18px; }
   .show { grid-template-columns: auto 1fr; }
@@ -807,6 +837,11 @@ textarea { min-height: 110px; resize: vertical; }
   .gallery-item.tall.solo { grid-column: 1 / -1; aspect-ratio: 4 / 5; }
   .gallery-item.tall.solo img { object-position: center 30%; }
   .lightbox { padding: 12px; }
+}
+
+/* very narrow phones: the Instagram link shows only its icon */
+@media (max-width: 370px) {
+  .header-social span { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
