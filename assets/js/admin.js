@@ -120,15 +120,53 @@ async function enterAdmin() {
 }
 
 let allShows = [];
+let clickCounts = new Map();
+
+/* ---- ticket clicks ----
+   The counts come from the ticket_click_counts() function in
+   supabase/ticket-clicks.sql. If that file has not been run yet, the call
+   fails, the stats box stays hidden and the rest of the page works. */
+async function loadClickCounts() {
+  clickCounts = new Map();
+  const box = document.getElementById("statsBox");
+  if (!client.rpc) { box.hidden = true; return; }
+  const { data, error } = await client.rpc("ticket_click_counts");
+  if (error) {
+    console.warn("ticket counts not loaded:", error.message);
+    box.hidden = true;
+    return;
+  }
+  const sum = { week: 0, total: 0, strip: 0, next: 0, list: 0 };
+  (data || []).forEach((r) => {
+    clickCounts.set(String(r.show_id), Number(r.total) || 0);
+    sum.week += Number(r.last_7_days) || 0;
+    sum.total += Number(r.total) || 0;
+    sum.strip += Number(r.from_strip) || 0;
+    sum.next += Number(r.from_next) || 0;
+    sum.list += Number(r.from_list) || 0;
+  });
+  document.getElementById("st_week").textContent = sum.week;
+  document.getElementById("st_total").textContent = sum.total;
+  document.getElementById("st_strip").textContent = sum.strip;
+  document.getElementById("st_next").textContent = sum.next;
+  document.getElementById("st_list").textContent = sum.list;
+  box.hidden = false;
+}
+
+function clickLine(s) {
+  const n = clickCounts.get(String(s.id)) || 0;
+  if (!n && !s.ticket_url) return "";
+  return `<div class="muted small">${n} ticket click${n === 1 ? "" : "s"}</div>`;
+}
 
 async function loadList() {
   const list = document.getElementById("adminList");
   list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
 
-  const { data, error } = await client
-    .from("shows")
-    .select("*")
-    .order("starts_at", { ascending: false });
+  const [{ data, error }] = await Promise.all([
+    client.from("shows").select("*").order("starts_at", { ascending: false }),
+    loadClickCounts(),
+  ]);
 
   if (error) {
     list.innerHTML = "";
@@ -156,6 +194,7 @@ async function loadList() {
             <strong>${esc(s.title)}</strong>
             ${s.is_published ? '<span class="pill live">Live</span>' : '<span class="pill">Hidden</span>'}
             <div class="muted small">${esc([s.venue, s.city].filter(Boolean).join(", "))}</div>
+            ${clickLine(s)}
           </div>
           <div class="acts">
             ${upcoming

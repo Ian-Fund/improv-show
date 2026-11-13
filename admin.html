@@ -86,6 +86,21 @@
         <div class="notice notice-bad" id="adminErr" hidden></div>
         <div class="notice notice-info" id="adminInfo" hidden></div>
 
+        <div class="stats" id="statsBox" hidden>
+          <p class="eyebrow" style="margin-bottom:10px">Ticket clicks</p>
+          <div class="stats-grid">
+            <div class="stat"><b id="st_week">0</b><span>Last 7 days</span></div>
+            <div class="stat"><b id="st_total">0</b><span>All time</span></div>
+            <div class="stat"><b id="st_strip">0</b><span>From the yellow bar</span></div>
+            <div class="stat"><b id="st_next">0</b><span>From the featured show</span></div>
+            <div class="stat"><b id="st_list">0</b><span>From the show list</span></div>
+          </div>
+          <p class="muted small" style="margin:12px 0 0">
+            Each visitor counts one time per show per day, on the first button they click.
+            For page visits, open Analytics in the Vercel dashboard.
+          </p>
+        </div>
+
         <div id="adminList"></div>
       </div>
 

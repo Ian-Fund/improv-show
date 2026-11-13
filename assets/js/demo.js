@@ -23,6 +23,7 @@
 
   const SHOWS_KEY = "pf-demo-shows";
   const SESSION_KEY = "pf-demo-session";
+  const CLICKS_KEY = "pf-demo-clicks";
 
   /* ---------- storage ---------- */
   function load(key, fallback) {
@@ -94,6 +95,15 @@
       };
     }
 
+    // Ticket clicks: kept in this browser, like the shows.
+    if (table === "ticket_clicks") {
+      if (b._op !== "insert") return { data: null, error: { message: "not allowed" } };
+      const clicks = load(CLICKS_KEY, []);
+      clicks.push(Object.assign({ clicked_at: new Date().toISOString() }, b._payload));
+      save(CLICKS_KEY, clicks);
+      return { data: null, error: null };
+    }
+
     if (table !== "shows") return { data: null, error: { message: "unknown table" } };
 
     if (b._op === "insert") {
@@ -156,11 +166,26 @@
     },
   };
 
+  /* ---------- stand-in for the ticket_click_counts() database function ---------- */
+  async function rpc(name) {
+    if (name !== "ticket_click_counts") return { data: null, error: { message: "unknown function" } };
+    const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
+    const byShow = {};
+    load(CLICKS_KEY, []).forEach((c) => {
+      const r = (byShow[c.show_id] = byShow[c.show_id] ||
+        { show_id: c.show_id, total: 0, last_7_days: 0, from_strip: 0, from_next: 0, from_list: 0 });
+      r.total += 1;
+      if (new Date(c.clicked_at).getTime() > weekAgo) r.last_7_days += 1;
+      r["from_" + c.place] += 1;
+    });
+    return { data: Object.values(byShow), error: null };
+  }
+
   /* ---------- wire it in ---------- */
   SUPABASE.url = "https://demo.invalid";
   SUPABASE.anonKey = "demo";
   window.supabase = {
-    createClient: () => ({ auth: auth, from: (table) => builder(table) }),
+    createClient: () => ({ auth: auth, from: (table) => builder(table), rpc: rpc }),
   };
 
   // The /api/* functions only exist on Vercel. Answer them here so the
@@ -206,6 +231,10 @@
       try {
         localStorage.removeItem(SHOWS_KEY);
         localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(CLICKS_KEY);
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith("pf-tc-"))
+          .forEach((k) => localStorage.removeItem(k));
       } catch (_) {}
       location.reload();
     });

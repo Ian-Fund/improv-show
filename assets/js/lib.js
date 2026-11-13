@@ -413,3 +413,63 @@ function renderFooter() {
 function setPageTitle(page) {
   document.title = page ? `${page} · ${fullTitle()}` : fullTitle();
 }
+
+/* ---------- metrics ---------- */
+
+// Ticket clicks. A ticket button carries data-tc-show (the show id) and
+// data-tc-place ("strip", "next" or "list"). A click saves one row in the
+// ticket_clicks table. Each browser counts one time per show per day, so a
+// visitor who clicks five times still counts as one. Nothing about the
+// visitor is saved: only the show, the button and the time.
+// If the table does not exist yet, the insert fails without a sound and the
+// button still works.
+function logTicketClick(showId, place) {
+  const client = db();
+  if (!client || !showId) return;
+  const key = `pf-tc-${showId}`;
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    if (localStorage.getItem(key) === today) return;
+    localStorage.setItem(key, today);
+  } catch (_) {
+    /* storage blocked: count the click anyway */
+  }
+  client
+    .from("ticket_clicks")
+    .insert({ show_id: showId, place: place })
+    .then(
+      (res) => {
+        if (res && res.error) console.warn("ticket click not saved:", res.error.message);
+      },
+      () => {},
+    );
+}
+
+function onTicketClick(e) {
+  const a = e.target.closest && e.target.closest("a[data-tc-show]");
+  if (!a) return;
+  // auxclick fires for every extra mouse button. Only the middle button opens the link.
+  if (e.type === "auxclick" && e.button !== 1) return;
+  logTicketClick(a.dataset.tcShow, a.dataset.tcPlace || "list");
+}
+document.addEventListener("click", onTicketClick);
+document.addEventListener("auxclick", onTicketClick);
+
+// Vercel Web Analytics: page views, referrers, countries and devices.
+// Turn it on in the Vercel dashboard (Project > Analytics > Enable).
+// It does not use cookies. It does not load on your own computer or on the
+// admin page, so your own visits do not count.
+(function () {
+  const local = ["localhost", "127.0.0.1", "::1", ""].includes(location.hostname);
+  const admin = /\/admin(\.html)?$/.test(location.pathname);
+  if (local || admin) return;
+  window.va =
+    window.va ||
+    function () {
+      (window.vaq = window.vaq || []).push(arguments);
+    };
+  const s = document.createElement("script");
+  s.defer = true;
+  s.src = "/_vercel/insights/script.js";
+  document.head.appendChild(s);
+})();

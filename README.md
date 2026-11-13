@@ -208,6 +208,18 @@ move into the collapsed "Past shows" section. There is nothing to clean up.
 
 **Editing or deleting** a date never sends an email — only new dates do.
 
+**Metrics.** Two tools count visitors:
+
+- *Ticket clicks.* Run `supabase/ticket-clicks.sql` one time in the Supabase SQL
+  Editor. After that, each "Get tickets" button saves a click (one per visitor
+  per show per day). The admin page shows the totals at the top and the count
+  under each show. Nothing personal is saved: only the show, which button, and
+  the time.
+- *Page visits.* In the Vercel dashboard, open the project, go to **Analytics**,
+  and click **Enable**. Then deploy. The numbers show in that same tab. It does
+  not use cookies. Your own visits on `localhost` and on the admin page do not
+  count.
+
 ---
 
 ## Security

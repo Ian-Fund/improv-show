@@ -56,7 +56,8 @@ function actions(show, isPast) {
   const tickets = safeUrl(show.ticket_url);
   if (tickets) {
     out.push(
-      `<a class="btn btn-primary btn-sm" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Tickets</a>`
+      `<a class="btn btn-primary btn-sm" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer"
+          data-tc-show="${esc(show.id)}" data-tc-place="list">Tickets</a>`
     );
   }
   out.push(calendarMenu(show, true));
@@ -129,7 +130,8 @@ function nextShowBlock(show) {
           : ""}
         <div class="actions">
           ${tickets
-            ? `<a class="btn btn-primary" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Get tickets</a>`
+            ? `<a class="btn btn-primary" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer"
+                 data-tc-show="${esc(show.id)}" data-tc-place="next">Get tickets</a>`
             : ""}
           ${calendarMenu(show, false)}
         </div>

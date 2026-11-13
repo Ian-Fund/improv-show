@@ -16,7 +16,8 @@
     const time = timeStr(s);
     const tickets = safeUrl(show.ticket_url);
     const go = tickets
-      ? `<a class="ts-go" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer">Get tickets &rarr;</a>`
+      ? `<a class="ts-go" href="${esc(tickets)}" target="_blank" rel="noopener noreferrer"` +
+        ` data-tc-show="${esc(show.id)}" data-tc-place="strip">Get tickets &rarr;</a>`
       : `<a class="ts-go" href="#nextShow">Details &rarr;</a>`;
 
     bar.innerHTML =
